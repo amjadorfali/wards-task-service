@@ -1,6 +1,5 @@
 
-export type ErrorCode =
-  | "InternalError"
+export type ErrorCode = "InternalError" | "FormError"
 
 export class GenericError extends Error {
   errorCode: ErrorCode;
