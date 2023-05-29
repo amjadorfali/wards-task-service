@@ -12,4 +12,5 @@ model HealthChecks {
   userId  String
   enabled Boolean
   cron    String
+  status  Int
 }
