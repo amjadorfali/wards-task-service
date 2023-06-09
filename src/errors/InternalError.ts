@@ -1,13 +1,7 @@
-import { logger } from "../libs";
+import { logger } from '../libs';
 import { GenericError } from "./GenericError";
 
-export type ErrorCode =
-  | "SkinServiceMergeTransactionError"
-  | "DeleteUserStorageError"
-  | "DeleteUserFromDBError"
-  | "DeleteUserFromFirebaseError"
-  | "MoveUserFolderError"
-  | "DeleteUserProfileQuestionError";
+export type ErrorCode = "DeleteTaskError"
 
 export class InternalError extends GenericError {
   constructor(errorCode: ErrorCode, debugData?: object) {

@@ -1,5 +1,10 @@
+import { logger } from "../libs";
 
-export type ErrorCode = "InternalError" | "FormError"
+export type ErrorCode =
+  "InternalError"
+  | "FormError"
+  | "UniqueConstraintFailed"
+  | "PrismaClientValidationError"
 
 export class GenericError extends Error {
   errorCode: ErrorCode;
@@ -10,7 +15,7 @@ export class GenericError extends Error {
     this.errorCode = errorCode;
     this.errorData = errorData;
     if (errorCode !== "InternalError") {
-   //   logger.error(`Error: ${errorCode}`, {data: debugData});
+      logger.error(`Error: ${errorCode}`, { data: debugData });
     }
   }
 }

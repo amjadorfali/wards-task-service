@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ValidationChain, validationResult } from "express-validator";
-import { GenericError } from "../errors";
+import { GenericError } from "../../errors";
 
 export const validate = (validations: ValidationChain[]) => {
   return async (req: Request<any>, res: Response, next: NextFunction) => {
@@ -9,13 +9,14 @@ export const validate = (validations: ValidationChain[]) => {
     );
 
     const errors = validationResult(req);
+
     if (errors.isEmpty()) {
       return next();
     }
 
     const fields = errors.array().map((item) => item.param);
     return next(
-      new GenericError(
+       new GenericError(
         "FormError",
         { failedFields: fields },
         { failedFields: fields }

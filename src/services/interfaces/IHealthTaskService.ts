@@ -1,7 +1,7 @@
-import { HealthChecks } from "@prisma/client";
+import { HealthCheck } from "@prisma/client";
 
 export interface IHealthTaskService {
-  getAll(userId: string): Promise<HealthChecks[]>;
+  getAll(userId: string): Promise<HealthCheck[]>;
 
-  create(userId: string, cron: string): Promise<HealthChecks>;
+  create(healthCheck:HealthCheck): Promise<HealthCheck>;
 }

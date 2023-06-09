@@ -1,15 +1,15 @@
 const success = (data?: any) => {
   return {
     resultCode: "SUCCESS",
-    data,
+    data
   };
 };
 
-const error = (errorCode: string, errorData?: object) => {
+const error = (errorCode: string, errorData?: object | string) => {
   return {
     resultCode: "ERROR",
     errorCode,
-    errorData,
+    errorData
   };
 };
 

@@ -7,10 +7,64 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model HealthChecks {
-  id      Int     @id @default(autoincrement())
-  userId  String
-  enabled Boolean
-  cron    String
-  status  Int
+model HealthCheck {
+  id        Int            @id @default(autoincrement())
+  userId    String
+  name      String
+  method    Method
+  timeout   Int?
+  verifySSL Boolean        @default(false)
+  enabled   Boolean
+  type      HealtCheckType
+  cron      String?
+  locations Location[]
+  headers   Header[]
+  uuid      String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model Assertion {
+  id          Int         @id @default(autoincrement())
+  type        String
+  value       String
+  compareType CompareType
+}
+
+enum CompareType {
+  SMALL
+  BIG
+  SMALL_EQUAL
+  BIG_EQUAL
+}
+
+model Header {
+  id            Int          @id @default(autoincrement())
+  type          String
+  value         String
+  HealthCheck   HealthCheck? @relation(fields: [healthCheckId], references: [id])
+  healthCheckId Int?
+}
+
+model Location {
+  id            Int          @id @default(autoincrement())
+  location      String
+  HealthCheck   HealthCheck? @relation(fields: [healthCheckId], references: [id])
+  healthCheckId Int?
+}
+
+enum Method {
+  GET
+  POST
+  PUT
+  PATCH
+  HEAD
+}
+
+enum HealtCheckType {
+  SWITCH
+  HTTP
+  BROWSER
+  TCP
+  UDP
 }
