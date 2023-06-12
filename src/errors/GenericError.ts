@@ -5,6 +5,7 @@ export type ErrorCode =
   | "FormError"
   | "UniqueConstraintFailed"
   | "PrismaClientValidationError"
+  | "ObjectNotFound"
 
 export class GenericError extends Error {
   errorCode: ErrorCode;

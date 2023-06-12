@@ -1,7 +1,9 @@
-import { HealthCheck } from "@prisma/client";
+import { Assertion, Header, HealthCheck } from "@prisma/client";
 
 export interface IHealthTaskService {
-  getAll(userId: string): Promise<HealthCheck[]>;
+  get(userId: string): Promise<HealthCheck | null>;
 
-  create(healthCheck:HealthCheck): Promise<HealthCheck>;
+  create(healthCheck: HealthCheck, assertions: Assertion[], headers: Header[]): Promise<HealthCheck>;
+
+  delete(id: string): void;
 }

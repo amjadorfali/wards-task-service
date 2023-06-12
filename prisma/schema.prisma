@@ -8,27 +8,31 @@ datasource db {
 }
 
 model HealthCheck {
-  id        Int            @id @default(autoincrement())
-  userId    String
-  name      String
-  method    Method
-  timeout   Int?
-  verifySSL Boolean        @default(false)
-  enabled   Boolean
-  type      HealtCheckType
-  cron      String?
-  locations Location[]
-  headers   Header[]
-  uuid      String?
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  id         String         @id @default(uuid())
+  userId     String
+  name       String
+  method     Method
+  timeout    Int?
+  verifySSL  Boolean        @default(false)
+  enabled    Boolean
+  type       HealtCheckType
+  cron       String?
+  locations  Location[]
+  assertions Assertion[]
+  headers    Header[]
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  @@unique([userId, name])
 }
 
 model Assertion {
-  id          Int         @id @default(autoincrement())
-  type        String
-  value       String
-  compareType CompareType
+  id            Int          @id @default(autoincrement())
+  type          String
+  value         String
+  compareType   CompareType
+  HealthCheck   HealthCheck? @relation(fields: [healthCheckId], references: [id], onDelete: Cascade)
+  healthCheckId String?
 }
 
 enum CompareType {
@@ -42,15 +46,20 @@ model Header {
   id            Int          @id @default(autoincrement())
   type          String
   value         String
-  HealthCheck   HealthCheck? @relation(fields: [healthCheckId], references: [id])
-  healthCheckId Int?
+  healthCheckId String?
+  HealthCheck   HealthCheck? @relation(fields: [healthCheckId], references: [id], onDelete: Cascade)
 }
 
-model Location {
-  id            Int          @id @default(autoincrement())
-  location      String
-  HealthCheck   HealthCheck? @relation(fields: [healthCheckId], references: [id])
-  healthCheckId Int?
+enum Location {
+  FRANKFURT
+  IRELAND
+  CALIFORNIA
+  DUBAI
+  OHIO
+  STOCKHOLM
+  SINGAPORE
+  SYDNEY
+  SAO_PAULO
 }
 
 enum Method {
