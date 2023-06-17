@@ -8,30 +8,34 @@ datasource db {
 }
 
 model HealthCheck {
-  id         String         @id @default(uuid())
-  userId     String
-  name       String
-  method     Method
-  timeout    Int?
-  verifySSL  Boolean        @default(false)
-  enabled    Boolean
-  type       HealtCheckType
-  cron       String?
-  locations  Location[]
-  assertions Assertion[]
-  headers    Header[]
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
+  id          String         @id @default(uuid())
+  userId      String
+  name        String
+  method      Method
+  timeout     Int?
+  verifySSL   Boolean        @default(false)
+  enabled     Boolean
+  type        HealtCheckType
+  inProgress  Boolean
+  interval    Int?
+  lastChecked DateTime
+  url         String
+  locations   Location[]
+  assertions  Assertion[]
+  headers     Header[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
   @@unique([userId, name])
 }
 
 model Assertion {
-  id            Int          @id @default(autoincrement())
-  type          String
+  id            Int           @id @default(autoincrement())
+  type          AssertionType
+  key           String
   value         String
   compareType   CompareType
-  HealthCheck   HealthCheck? @relation(fields: [healthCheckId], references: [id], onDelete: Cascade)
+  HealthCheck   HealthCheck?  @relation(fields: [healthCheckId], references: [id], onDelete: Cascade)
   healthCheckId String?
 }
 
@@ -40,6 +44,9 @@ enum CompareType {
   BIG
   SMALL_EQUAL
   BIG_EQUAL
+  DOES_NOT_CONTAIN
+  EQUAL
+  NOT_EQUAL
 }
 
 model Header {
@@ -76,4 +83,13 @@ enum HealtCheckType {
   BROWSER
   TCP
   UDP
+}
+
+enum AssertionType {
+  RESPONSE_TIME
+  RESPONSE_CODE
+  RESPONSE_BODY
+  RESPONSE_JSON
+  RESPONSE_HEADER
+  SSL_SERTIFICATE_EXPIRES_IN
 }

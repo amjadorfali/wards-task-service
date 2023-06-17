@@ -3,7 +3,7 @@ import { healthTaskService } from "../services";
 import { getResponse } from "../utils";
 import { validate } from "../utils/validations";
 import { body } from "express-validator";
-import { CompareType, HealtCheckType, Location, Method } from "@prisma/client";
+import { AssertionType, CompareType, HealtCheckType, Location, Method } from "@prisma/client";
 import { GenericError } from "../errors";
 
 export const healthTaskRoute = express.Router();
@@ -27,17 +27,19 @@ healthTaskRoute.post("/",
   validate([
     body("userId", "InvalidValue").isString(),
     body("name", "InvalidValue").isString(),
+    body("url", "InvalidValue").isString(),
     body("method", "InvalidValue").isIn(Object.values(Method)),
     body("timeout", "InvalidValue").isNumeric(),
     body("verifySSL", "InvalidValue").isBoolean(),
     body("enabled", "InvalidValue").isBoolean(),
     body("type", "InvalidValue").notEmpty().isIn(Object.values(HealtCheckType)),
-    body("cron", "InvalidValue").isString(),
+    body("interval", "InvalidValue").isInt(),
     body("locations", "InvalidValue").optional().isIn(Object.values(Location)).isString(),
     body("assertions.*.type").isString(),
     body("assertions.*.value").isString(),
     body("assertions.*.compareType").isIn(Object.values(CompareType)),
-    body("headers.*.type", "InvalidValue").isString(),
+    body("headers.*.type", "InvalidValue").isIn(Object.values(AssertionType)),
+    body("headers.*.key", "InvalidValue").isString(),
     body("headers.*.value", "InvalidValue").isString()
   ]),
   async (

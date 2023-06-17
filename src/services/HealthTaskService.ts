@@ -10,8 +10,11 @@ export class HealthTaskService implements IHealthTaskService {
 
   async create(healthCheck: HealthCheck, assertions: Assertion[], headers: Header[]) {
     let healthCheckCreateInput: Prisma.HealthCheckCreateInput = {
+      url: healthCheck.url,
+      inProgress: false,
+      lastChecked: new Date(),
       userId: healthCheck.userId,
-      cron: healthCheck.cron,
+      interval: healthCheck.interval,
       enabled: true,
       verifySSL: healthCheck.verifySSL,
       name: healthCheck.name,
@@ -27,7 +30,8 @@ export class HealthTaskService implements IHealthTaskService {
           return {
             type: assertion.type,
             compareType: assertion.compareType,
-            value: assertion.value
+            value: assertion.value,
+            key: assertion.key
           };
         })
       };
@@ -51,7 +55,7 @@ export class HealthTaskService implements IHealthTaskService {
       where: { id: healthCheck.id },
       data: {
         userId: healthCheck.userId,
-        cron: healthCheck.cron,
+        interval: healthCheck.interval,
         enabled: healthCheck.enabled,
         verifySSL: healthCheck.verifySSL,
         name: healthCheck.name,
