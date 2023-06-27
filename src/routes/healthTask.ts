@@ -3,7 +3,7 @@ import { healthTaskService } from "../services";
 import { getResponse } from "../utils";
 import { validate } from "../utils/validations";
 import { body } from "express-validator";
-import { AssertionType, CompareType, HealthCheckType, Location, Method } from "@prisma/client";
+import { AssertionType, CompareType, HealthCheckType, Interval, Location, Method } from "@prisma/client";
 import { GenericError } from "../errors";
 
 export const healthTaskRoute = express.Router();
@@ -33,7 +33,7 @@ healthTaskRoute.post("/",
     body("verifySSL", "InvalidValue").isBoolean(),
     body("enabled", "InvalidValue").isBoolean(),
     body("type", "InvalidValue").notEmpty().isIn(Object.values(HealthCheckType)),
-    body("interval", "InvalidValue").isInt(),
+    body("interval", "InvalidValue").isIn(Object.values(Interval)),
     body("locations", "InvalidValue").optional().isIn(Object.values(Location)).isString(),
     body("assertions.*.type").isIn(Object.values(AssertionType)),
     body("assertions.*.value").isString(),
