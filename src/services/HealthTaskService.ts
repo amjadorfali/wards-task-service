@@ -4,16 +4,20 @@ import { Assertion, Header, HealthCheck, Prisma } from "@prisma/client";
 import _ from "lodash";
 
 export class HealthTaskService implements IHealthTaskService {
+  getAllWithTeamId(teamId: number): Promise<HealthCheck[]> {
+    return prisma.healthCheck.findMany({ where: { teamId: teamId } });
+  }
+
   async get(id: string) {
     return prisma.healthCheck.findFirst({ include: { assertions: true }, where: { id: id } });
   }
 
-  async create(healthCheck: HealthCheck, assertions: Assertion[], headers: Header[]) {
+  async create(healthCheck: HealthCheck, assertions: Assertion[], headers: Header[], teamId: number) {
     let healthCheckCreateInput: Prisma.HealthCheckCreateInput = {
+      team: { connect: { id: teamId } },
       url: healthCheck.url,
       inProgress: false,
       lastChecked: new Date(),
-      userId: healthCheck.userId,
       interval: healthCheck.interval,
       enabled: true,
       verifySSL: healthCheck.verifySSL,
@@ -54,7 +58,6 @@ export class HealthTaskService implements IHealthTaskService {
     return prisma.healthCheck.update({
       where: { id: healthCheck.id },
       data: {
-        userId: healthCheck.userId,
         interval: healthCheck.interval,
         enabled: healthCheck.enabled,
         verifySSL: healthCheck.verifySSL,
@@ -69,5 +72,6 @@ export class HealthTaskService implements IHealthTaskService {
   async delete(id: string) {
     return prisma.healthCheck.delete({ where: { id: id } });
   }
+
 
 }

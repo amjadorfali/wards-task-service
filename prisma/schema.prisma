@@ -7,26 +7,59 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id          Int        @id @default(autoincrement())
+  subId       String
+  teams       Team[]
+  phoneNumber String
+  email       String
+  Incident    Incident[]
+}
+
+model Team {
+  id            Int           @id @default(autoincrement())
+  name          String
+  users         User[]
+  HealthCheck   HealthCheck[]
+  healthCheckId String?
+  Incident      Incident[]
+}
+
+model Incident {
+  id            Int            @id @default(autoincrement())
+  status        IncidentStatus
+  startedAt     DateTime
+  cause         String
+  assignedUser  User?          @relation(fields: [userId], references: [id])
+  team          Team           @relation(fields: [teamId], references: [id])
+  healthCheck   HealthCheck    @relation(fields: [healthCheckId], references: [id])
+  userId        Int?
+  teamId        Int
+  healthCheckId String
+}
+
 model HealthCheck {
-  id          String         @id @default(uuid())
-  userId      String
+  id          String          @id @default(uuid())
   name        String
   method      Method
   timeout     Int?
-  verifySSL   Boolean        @default(false)
+  verifySSL   Boolean         @default(false)
   enabled     Boolean
-  type        HealtCheckType
+  type        HealthCheckType
   inProgress  Boolean
-  interval    Int?
+  interval    Interval
   lastChecked DateTime
   url         String
   locations   Location[]
   assertions  Assertion[]
   headers     Header[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  team        Team            @relation(fields: [teamId], references: [id])
+  teamId      Int
+  incidents   Incident[]
 
-  @@unique([userId, name])
+  @@unique([teamId, name])
 }
 
 model Assertion {
@@ -35,7 +68,7 @@ model Assertion {
   key           String
   value         String
   compareType   CompareType
-  HealthCheck   HealthCheck?  @relation(fields: [healthCheckId], references: [id], onDelete: Cascade)
+  healthCheck   HealthCheck?  @relation(fields: [healthCheckId], references: [id], onDelete: Cascade)
   healthCheckId String?
 }
 
@@ -77,7 +110,7 @@ enum Method {
   HEAD
 }
 
-enum HealtCheckType {
+enum HealthCheckType {
   SWITCH
   HTTP
   BROWSER
@@ -92,4 +125,28 @@ enum AssertionType {
   RESPONSE_JSON
   RESPONSE_HEADER
   SSL_SERTIFICATE_EXPIRES_IN
+}
+
+enum Roles {
+  OWNER
+  MODERATOR
+  COMMENTER
+  READER
+}
+
+enum IncidentStatus {
+  ONGOING
+  RESOLVED
+  ACKNOWLEDGED
+}
+enum Interval {
+  SECOND_30
+  SECOND_45
+  MINUTE_1
+  MINUTE_2
+  MINUTE_3
+  MINUTE_5
+  MINUTE_10
+  MINUTE_15
+  MINUTE_30
 }

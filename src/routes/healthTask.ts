@@ -3,7 +3,7 @@ import { healthTaskService } from "../services";
 import { getResponse } from "../utils";
 import { validate } from "../utils/validations";
 import { body } from "express-validator";
-import { AssertionType, CompareType, HealtCheckType, Location, Method } from "@prisma/client";
+import { AssertionType, CompareType, HealthCheckType, Location, Method } from "@prisma/client";
 import { GenericError } from "../errors";
 
 export const healthTaskRoute = express.Router();
@@ -25,21 +25,20 @@ healthTaskRoute.get("/:id", async (
 
 healthTaskRoute.post("/",
   validate([
-    body("userId", "InvalidValue").isString(),
+    body("teamId", "InvalidValue").isInt(),
     body("name", "InvalidValue").isString(),
     body("url", "InvalidValue").isString(),
     body("method", "InvalidValue").isIn(Object.values(Method)),
     body("timeout", "InvalidValue").isNumeric(),
     body("verifySSL", "InvalidValue").isBoolean(),
     body("enabled", "InvalidValue").isBoolean(),
-    body("type", "InvalidValue").notEmpty().isIn(Object.values(HealtCheckType)),
+    body("type", "InvalidValue").notEmpty().isIn(Object.values(HealthCheckType)),
     body("interval", "InvalidValue").isInt(),
     body("locations", "InvalidValue").optional().isIn(Object.values(Location)).isString(),
-    body("assertions.*.type").isString(),
+    body("assertions.*.type").isIn(Object.values(AssertionType)),
     body("assertions.*.value").isString(),
     body("assertions.*.compareType").isIn(Object.values(CompareType)),
-    body("headers.*.type", "InvalidValue").isIn(Object.values(AssertionType)),
-    body("headers.*.key", "InvalidValue").isString(),
+    body("headers.*.type", "InvalidValue").isString(),
     body("headers.*.value", "InvalidValue").isString()
   ]),
   async (
@@ -47,8 +46,8 @@ healthTaskRoute.post("/",
     res: Response,
     next: NextFunction
   ) => {
-    const { assertions, headers, ...healthCheckParams } = req.body;
-    return healthTaskService.create(healthCheckParams, assertions, headers)
+    const { assertions, headers, teamId, ...healthCheckParams } = req.body;
+    return healthTaskService.create(healthCheckParams, assertions, headers, teamId)
       .then((data) => {
         res.json(getResponse.success(data));
       }).catch((e) => {
