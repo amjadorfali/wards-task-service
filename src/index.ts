@@ -6,9 +6,12 @@ import bodyParser from "body-parser";
 import { errorHandler } from "./middlewares/errorHandler";
 import { userRoute } from "./routes/user";
 import { teamRoute } from "./routes/team";
+import { corsPolicy } from "./middlewares/cors";
 
 require("dotenv").config();
 const app = express();
+
+app.use(corsPolicy)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
