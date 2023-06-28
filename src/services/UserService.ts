@@ -11,7 +11,7 @@ export class UserService implements IUserService {
   }
 
   get(subId: string): Promise<User | null> {
-    return prisma.user.findFirst({ where: { subId: subId } });
+    return prisma.user.findFirst({ where: { subId: subId }, include: { teams: true } });
   }
 
   async create(subId: string, email: string, teamName: string): Promise<User> {
