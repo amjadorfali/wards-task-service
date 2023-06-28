@@ -10,6 +10,8 @@ import cors from "cors";
 
 require("dotenv").config();
 const app = express();
+//TODO: Remove from Production
+app.use(cors())
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -18,7 +20,6 @@ app.use(bodyParser.raw());
 app.use("/api/task/health", standardLimiter, healthTaskRoute);
 app.use("/api/team/", standardLimiter, teamRoute);
 app.use("/api/user/", standardLimiter, userRoute);
-app.use(cors());
 app.use(helmet());
 app.use(errorHandler);
 
