@@ -17,8 +17,8 @@ userRoute.post("/", validate([
   res: Response,
   next: NextFunction
 ) => {
-  const { subId, email, phoneNumber, teamName } = req.body;
-  return userService.create(subId, email, phoneNumber, teamName)
+  const { subId, email, teamName } = req.body;
+  return userService.create(subId, email, teamName)
     .then((data) => {
       res.json(getResponse.success(data));
     }).catch((e) => {

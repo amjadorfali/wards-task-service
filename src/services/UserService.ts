@@ -14,13 +14,12 @@ export class UserService implements IUserService {
     return prisma.user.findFirst({ where: { subId: subId } });
   }
 
-  async create(subId: string, email: string, phoneNumber: string, teamName: string): Promise<User> {
+  async create(subId: string, email: string, teamName: string): Promise<User> {
 
     return prisma.user.create({
       include: { teams: true },
       data: {
         subId: subId,
-        phoneNumber: phoneNumber,
         email: email,
         teams: { create: [{ name: teamName }] }
       }
@@ -32,9 +31,9 @@ export class UserService implements IUserService {
   }
 
 
-  update(id: string, email: string, phoneNumber: string): Promise<User> {
+  update(id: string, email: string): Promise<User> {
     return prisma.user.update({
-      where: { id: 1 }, data: { email: email, phoneNumber: phoneNumber }
+      where: { id: 1 }, data: { email: email }
     });
   }
 
