@@ -9,7 +9,7 @@ datasource db {
 
 model User {
   id          Int        @id @default(autoincrement())
-  subId       String
+  subId       String     @unique
   teams       Team[]
   phoneNumber String
   email       String
@@ -17,12 +17,11 @@ model User {
 }
 
 model Team {
-  id            Int           @id @default(autoincrement())
-  name          String
-  users         User[]
-  HealthCheck   HealthCheck[]
-  healthCheckId String?
-  Incident      Incident[]
+  id          Int           @id @default(autoincrement())
+  name        String
+  users       User[]
+  healthCheck HealthCheck[]
+  incident    Incident[]
 }
 
 model Incident {
@@ -39,56 +38,55 @@ model Incident {
 }
 
 model HealthCheck {
-  id          String          @id @default(uuid())
+  id          String              @id @default(uuid())
   name        String
   method      Method
   timeout     Int?
-  verifySSL   Boolean         @default(false)
-  enabled     Boolean
+  enabled     Boolean             @default(true)
   type        HealthCheckType
   inProgress  Boolean
-  interval    Interval
+  interval    Int
   lastChecked DateTime
   url         String
   locations   Location[]
-  assertions  Assertion[]
-  headers     Header[]
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  team        Team            @relation(fields: [teamId], references: [id])
+  port        Int?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  team        Team                @relation(fields: [teamId], references: [id])
   teamId      Int
   incidents   Incident[]
+  metadata    HealthTaskMetadata? @relation(fields: [assertionId], references: [id])
+  assertionId Int?                @unique
 
   @@unique([teamId, name])
 }
 
-model Assertion {
-  id            Int           @id @default(autoincrement())
-  type          AssertionType
-  key           String
-  value         String
-  compareType   CompareType
-  healthCheck   HealthCheck?  @relation(fields: [healthCheckId], references: [id], onDelete: Cascade)
-  healthCheckId String?
+model HealthTaskMetadata {
+  id           Int          @id @default(autoincrement())
+  httpUserName String?
+  httpPassword String?
+  headers      Json?
+  assertions   Json?
+  requestBody  Json?
+  verifySSL    Boolean      @default(false)
+  healthCheck  HealthCheck?
 }
 
-enum CompareType {
-  SMALL
-  BIG
-  SMALL_EQUAL
-  BIG_EQUAL
-  DOES_NOT_CONTAIN
-  EQUAL
-  NOT_EQUAL
-}
+// enum CompareType {
+//   SMALL
+//   BIG
+//   SMALL_EQUAL
+//   BIG_EQUAL
+//   DOES_NOT_CONTAIN
+//   EQUAL
+//   NOT_EQUAL
+// }
 
-model Header {
-  id            Int          @id @default(autoincrement())
-  type          String
-  value         String
-  healthCheckId String?
-  HealthCheck   HealthCheck? @relation(fields: [healthCheckId], references: [id], onDelete: Cascade)
-}
+// model Header {
+//   id            Int          @id @default(autoincrement())
+//   type          String
+//   value         String
+// }
 
 enum Location {
   FRANKFURT
@@ -113,19 +111,21 @@ enum Method {
 enum HealthCheckType {
   SWITCH
   HTTP
-  BROWSER
+  SMTP
+  POP3
+  IMAP
   TCP
   UDP
 }
 
-enum AssertionType {
-  RESPONSE_TIME
-  RESPONSE_CODE
-  RESPONSE_BODY
-  RESPONSE_JSON
-  RESPONSE_HEADER
-  SSL_SERTIFICATE_EXPIRES_IN
-}
+// enum AssertionType {
+//   RESPONSE_TIME
+//   RESPONSE_CODE
+//   RESPONSE_BODY
+//   RESPONSE_JSON
+//   RESPONSE_HEADER
+//   SSL_SERTIFICATE_EXPIRES_IN
+// }
 
 enum Roles {
   OWNER
@@ -139,6 +139,7 @@ enum IncidentStatus {
   RESOLVED
   ACKNOWLEDGED
 }
+
 enum Interval {
   SECOND_30
   SECOND_45

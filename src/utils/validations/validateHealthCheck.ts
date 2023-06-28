@@ -1,15 +1,22 @@
-import { Assertion, CompareType, HealtCheckType, Method } from "@prisma/client";
-import { body } from "express-validator";
-import { validate } from "./validate";
+import { AssertionType } from "../../models/enums";
+import { Assertion } from "../../models/Assertion";
+import { GenericError } from "../../errors";
 
-type myEnums = HealtCheckType | Method | CompareType
+
 export const validateAssertions = async (assertions: Assertion[]) => {
-
-  return validate([
-    body("assertions.*.type").isString(),
-    body("assertions.*.value").notEmpty().isIn(Object.values(CompareType)),
-    body("assertions.*.compareType").isString()
-  ]);
-
+  assertions.forEach((val) => {
+    switch (val.type) {
+      case AssertionType.RESPONSE_BODY:
+      case AssertionType.RESPONSE_CODE:
+        if ((val.value instanceof Array) && val.value.every((element:any) => {return typeof element === 'number'})) {
+          break;
+        }
+        throw new GenericError("FormError", { val: val.value });
+      case AssertionType.RESPONSE_HEADER:
+      case AssertionType.RESPONSE_JSON:
+      case AssertionType.RESPONSE_TIME:
+      case AssertionType.SSL_CERTIFICATE_EXPIRES_IN:
+    }
+  });
 
 };

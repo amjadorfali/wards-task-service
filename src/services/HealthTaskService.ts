@@ -1,6 +1,6 @@
 import { IHealthTaskService } from "./interfaces/IHealthTaskService";
 import { prisma } from "../db";
-import { Assertion, Header, HealthCheck, Prisma } from "@prisma/client";
+import { HealthCheck, HealthTaskMetadata, Prisma } from "@prisma/client";
 import _ from "lodash";
 
 export class HealthTaskService implements IHealthTaskService {
@@ -9,10 +9,11 @@ export class HealthTaskService implements IHealthTaskService {
   }
 
   async get(id: string) {
-    return prisma.healthCheck.findFirst({ include: { assertions: true }, where: { id: id } });
+    return prisma.healthCheck.findFirst({ include: { metadata: true }, where: { id: id } });
   }
 
-  async create(healthCheck: HealthCheck, assertions: Assertion[], headers: Header[], teamId: number) {
+  async create(healthCheck: HealthCheck, metaData: HealthTaskMetadata, teamId: number) {
+
     let healthCheckCreateInput: Prisma.HealthCheckCreateInput = {
       team: { connect: { id: teamId } },
       url: healthCheck.url,
@@ -20,37 +21,29 @@ export class HealthTaskService implements IHealthTaskService {
       lastChecked: new Date(),
       interval: healthCheck.interval,
       enabled: true,
-      verifySSL: healthCheck.verifySSL,
       name: healthCheck.name,
       timeout: healthCheck.timeout,
       method: healthCheck.method,
       type: healthCheck.type,
-      locations: healthCheck.locations
+      locations: healthCheck.locations,
     };
-    // Check if posts should be included in the query
-    if (!_.isEmpty(assertions)) {
-      healthCheckCreateInput.assertions = {
-        create: assertions.map(assertion => {
-          return {
-            type: assertion.type,
-            compareType: assertion.compareType,
-            value: assertion.value,
-            key: assertion.key
-          };
-        })
-      };
-    }
-    if (!_.isEmpty(headers)) {
-      healthCheckCreateInput.headers = {
-        create: headers.map(header => {
-          return {
-            type: header.type,
-            value: header.value
-          };
-        })
-      };
-    }
 
+    if (!_.isEmpty(metaData)) {
+      const metaDataCreateInput: Prisma.HealthTaskMetadataCreateInput = {
+        httpUserName: metaData.httpUserName,
+        httpPassword: metaData.httpPassword,
+        assertions: metaData.assertions !== null ? metaData.assertions : undefined,
+        headers: metaData.headers !== null ? metaData.headers : undefined,
+        verifySSL: metaData.verifySSL,
+        requestBody: metaData.requestBody !== null ? metaData.requestBody : undefined
+      };
+      healthCheckCreateInput = {
+        ...healthCheckCreateInput,
+        metadata: {
+          create: metaDataCreateInput
+        }
+      };
+    }
     return prisma.healthCheck.create({ data: healthCheckCreateInput });
   }
 
@@ -60,7 +53,6 @@ export class HealthTaskService implements IHealthTaskService {
       data: {
         interval: healthCheck.interval,
         enabled: healthCheck.enabled,
-        verifySSL: healthCheck.verifySSL,
         name: healthCheck.name,
         timeout: healthCheck.timeout,
         method: healthCheck.method,

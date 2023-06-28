@@ -1,0 +1,30 @@
+export enum AssertionType {
+  RESPONSE_TIME,
+  RESPONSE_CODE,
+  RESPONSE_BODY,
+  RESPONSE_JSON,
+  RESPONSE_HEADER,
+  SSL_CERTIFICATE_EXPIRES_IN,
+}
+
+export enum CompareType {
+  SMALL,
+  BIG,
+  SMALL_EQUAL,
+  BIG_EQUAL,
+  DOES_NOT_CONTAIN,
+  EQUAL,
+  NOT_EQUAL
+}
+
+export const interval = {
+  SECOND_30: 30,
+  SECOND_45: 45,
+  MINUTE_1: 60,
+  MINUTE_2: 120,
+  MINUTE_3: 180,
+  MINUTE_5: 300,
+  MINUTE_10: 600,
+  MINUTE_15: 900,
+  MINUTE_30: 1200
+};

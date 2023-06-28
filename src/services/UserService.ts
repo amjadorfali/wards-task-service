@@ -17,6 +17,7 @@ export class UserService implements IUserService {
   async create(subId: string, email: string, phoneNumber: string, teamName: string): Promise<User> {
 
     return prisma.user.create({
+      include: { teams: true },
       data: {
         subId: subId,
         phoneNumber: phoneNumber,

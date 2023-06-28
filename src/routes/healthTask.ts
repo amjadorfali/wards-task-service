@@ -3,8 +3,10 @@ import { healthTaskService } from "../services";
 import { getResponse } from "../utils";
 import { validate } from "../utils/validations";
 import { body } from "express-validator";
-import { AssertionType, CompareType, HealthCheckType, Interval, Location, Method } from "@prisma/client";
+import { HealthCheckType, Location, Method } from "@prisma/client";
 import { GenericError } from "../errors";
+import { validateAssertions } from "../utils/validations/validateHealthCheck";
+import { interval } from "../models/enums";
 
 export const healthTaskRoute = express.Router();
 
@@ -28,26 +30,27 @@ healthTaskRoute.post("/",
     body("teamId", "InvalidValue").isInt(),
     body("name", "InvalidValue").isString(),
     body("url", "InvalidValue").isString(),
+    body("port", "InvalidValue").optional().isInt(),
     body("method", "InvalidValue").isIn(Object.values(Method)),
     body("timeout", "InvalidValue").isNumeric(),
-    body("verifySSL", "InvalidValue").isBoolean(),
     body("enabled", "InvalidValue").isBoolean(),
     body("type", "InvalidValue").notEmpty().isIn(Object.values(HealthCheckType)),
-    body("interval", "InvalidValue").isIn(Object.values(Interval)),
+    body("interval", "InvalidValue").isIn(Object.values(interval)),
     body("locations", "InvalidValue").optional().isIn(Object.values(Location)).isString(),
-    body("assertions.*.type").isIn(Object.values(AssertionType)),
-    body("assertions.*.value").isString(),
-    body("assertions.*.compareType").isIn(Object.values(CompareType)),
-    body("headers.*.type", "InvalidValue").isString(),
-    body("headers.*.value", "InvalidValue").isString()
+    body("metadata.verifySSL", "InvalidValue").default(false).isBoolean(),
+    body("metadata.headers", "InvalidValue").optional().isObject(),
+    body("metadata.assertions", "InvalidValue").optional().isArray().custom(validateAssertions),
+    body("metadata.requestBody", "InvalidValue").optional(),
+    body("metadata.httpUserName", "InvalidValue").optional().isString(),
+    body("metadata.httpPassword", "InvalidValue").optional().isString(),
   ]),
   async (
     req: Request,
     res: Response,
     next: NextFunction
   ) => {
-    const { assertions, headers, teamId, ...healthCheckParams } = req.body;
-    return healthTaskService.create(healthCheckParams, assertions, headers, teamId)
+    const { metadata, teamId, ...healthCheckParams } = req.body;
+    return healthTaskService.create(healthCheckParams, metadata, teamId)
       .then((data) => {
         res.json(getResponse.success(data));
       }).catch((e) => {
