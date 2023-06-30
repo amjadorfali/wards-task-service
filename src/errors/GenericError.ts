@@ -6,6 +6,8 @@ export type ErrorCode =
   | "UniqueConstraintFailed"
   | "PrismaClientValidationError"
   | "ObjectNotFound"
+  | "UserAlreadyExists"
+  | "UserDoesntHaveEmailFromCognito"
 
 export class GenericError extends Error {
   errorCode: ErrorCode;

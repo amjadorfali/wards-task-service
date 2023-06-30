@@ -1,5 +1,5 @@
-import { AssertionType } from "../../models/enums";
-import { Assertion } from "../../models/Assertion";
+import { AssertionType } from "../../enums/enums";
+import { Assertion } from "../../types";
 import { GenericError } from "../../errors";
 
 

@@ -1,4 +1,4 @@
-import { AssertionType, CompareType } from "./enums";
+import { AssertionType, CompareType } from "../enums/enums";
 
 export interface Assertion {
   key?: string,

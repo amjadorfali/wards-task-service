@@ -13,7 +13,9 @@ export class HealthTaskService implements IHealthTaskService {
   }
 
   async create(healthCheck: HealthCheck, metaData: HealthTaskMetadata, teamId: number) {
-
+    if (healthCheck.timeout != null) {
+      healthCheck.timeout *= 1000
+    }
     let healthCheckCreateInput: Prisma.HealthCheckCreateInput = {
       team: { connect: { id: teamId } },
       url: healthCheck.url,
@@ -25,7 +27,7 @@ export class HealthTaskService implements IHealthTaskService {
       timeout: healthCheck.timeout,
       method: healthCheck.method,
       type: healthCheck.type,
-      locations: healthCheck.locations,
+      locations: healthCheck.locations
     };
 
     if (!_.isEmpty(metaData)) {

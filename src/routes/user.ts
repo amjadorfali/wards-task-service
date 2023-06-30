@@ -9,16 +9,15 @@ export const userRoute = express.Router();
 
 
 userRoute.post("/", validate([
-  body("subId", "InvalidValue").isString(),
-  body("email", "InvalidValue").isEmail(),
   body("teamName", "InvalidValue").isString()
 ]), async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const { subId, email, teamName } = req.body;
-  return userService.create(subId, email, teamName)
+  const { cognitoUser } = req;
+  const { teamName } = req.body;
+  return userService.create(cognitoUser.uuid, cognitoUser.email, teamName)
     .then((data) => {
       res.json(getResponse.success(data));
     }).catch((e) => {
@@ -32,7 +31,7 @@ userRoute.get("/:subId",
     req: Request,
     res: Response,
     next: NextFunction) => {
-    return userService.get(req.params.subId)
+    return userService.getByCognitoUid(req.params.subId)
       .then((data) => {
         if (data === null) {
           throw new GenericError("ObjectNotFound");

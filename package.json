@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.363.0",
     "@prisma/client": "^3.12.0",
     "@types/cors": "^2.8.13",
     "aws-jwt-verify": "^4.0.0",

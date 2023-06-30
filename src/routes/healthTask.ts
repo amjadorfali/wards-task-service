@@ -6,7 +6,7 @@ import { body } from "express-validator";
 import { HealthCheckType, Location, Method } from "@prisma/client";
 import { GenericError } from "../errors";
 import { validateAssertions } from "../utils/validations/validateHealthCheck";
-import { interval } from "../models/enums";
+import { interval } from "../enums/enums";
 
 export const healthTaskRoute = express.Router();
 

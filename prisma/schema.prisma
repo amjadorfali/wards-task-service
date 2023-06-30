@@ -8,12 +8,45 @@ datasource db {
 }
 
 model User {
-  id          Int        @id @default(autoincrement())
-  subId       String     @unique
-  teams       Team[]
-  phoneNumber String?
-  email       String
-  Incident    Incident[]
+  id               Int             @id @default(autoincrement())
+  uuid             String          @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  teams            Team[]
+  phoneNumber      String?
+  email            String          @unique
+  Incident         Incident[]
+  healthCheckUsage Int             @default(0)
+  // subscriptions   Subscription[]
+  userIdentities   UserIdentitiy[]
+
+  @@map("user")
+}
+
+// model Subscription {
+//   id     Int    @id @default(autoincrement())
+//   planId String
+//
+//   user   User @relation(fields: [userId], references: [id])
+//   userId Int
+//
+//   startDate DateTime
+//   renewDate DateTime
+//   endDate   DateTime?
+//
+//   @@map("subscriptions")
+// }
+
+model UserIdentitiy {
+  id Int @id @default(autoincrement())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  cognitoUid String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_identity")
 }
 
 model Team {
@@ -22,6 +55,8 @@ model Team {
   users       User[]
   healthCheck HealthCheck[]
   incident    Incident[]
+
+  @@map("team")
 }
 
 model Incident {
@@ -35,6 +70,8 @@ model Incident {
   userId        Int?
   teamId        Int
   healthCheckId String
+
+  @@map("incident")
 }
 
 model HealthCheck {
@@ -59,6 +96,7 @@ model HealthCheck {
   assertionId Int?                @unique
 
   @@unique([teamId, name])
+  @@map("health_check")
 }
 
 model HealthTaskMetadata {
@@ -70,6 +108,8 @@ model HealthTaskMetadata {
   requestBody  Json?
   verifySSL    Boolean      @default(false)
   healthCheck  HealthCheck?
+
+  @@map("health_task_metadata")
 }
 
 // enum CompareType {
