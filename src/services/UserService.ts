@@ -1,16 +1,10 @@
 import { IUserService } from "./interfaces/IUserService";
 import { prisma } from "../db";
 import { User } from "@prisma/client";
-import { TeamService } from "./TeamService";
 import { UserWithIdentities } from "../types";
 import { GenericError } from "../errors";
 
 export class UserService implements IUserService {
-  private teamService: TeamService;
-
-  constructor(teamService: TeamService) {
-    this.teamService = teamService;
-  }
 
 
   async updateMe(subId: string, email: string | undefined): Promise<User> {

@@ -18,8 +18,14 @@ export class TeamService implements ITeamService {
     return prisma.team.update({ where: { id: teamId }, data: { users: { connect: [{ id: userId }] } } });
   }
 
-  create(userId: number, teamName: string): Promise<Team> {
-    return prisma.team.create({ data: { name: teamName, users: { connect: { id: userId } } } });
+  async create(cognitoSubId: string, teamName: string): Promise<Team> {
+    const cognitoUser = await prisma.user.findFirst({
+      where: { userIdentities: { every: { cognitoUid: cognitoSubId } } }
+    });
+    if (!cognitoUser) {
+      throw new GenericError("ObjectNotFound");
+    }
+    return prisma.team.create({ data: { name: teamName, users: { connect: { id: cognitoUser.id } } } });
   }
 
   update(teamId: number, data: Pick<Team, "healthCheckUsage">): PrismaPromise<Team> {

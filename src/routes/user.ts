@@ -1,6 +1,4 @@
 import express, { NextFunction, Request, Response } from "express";
-import { validate } from "../utils/validations";
-import { body } from "express-validator";
 import { userService } from "../services/factory";
 import { getResponse } from "../utils";
 import { GenericError } from "../errors";
