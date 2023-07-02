@@ -36,7 +36,8 @@ model UserIdentitiy {
   id Int @id @default(autoincrement())
 
   userId Int
-  user   User @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+  uuid   String @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
   cognitoUid String @unique
 
