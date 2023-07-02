@@ -7,11 +7,15 @@ import { HealthCheckType, Location, Method } from "@prisma/client";
 import { GenericError } from "../errors";
 import { validateAssertions } from "../utils/validations/validateHealthCheck";
 import { interval } from "../enums/enums";
+import { generateAuthHandler } from "../middlewares/authHandler";
 
 export const healthTaskRoute = express.Router();
+const authHandler = generateAuthHandler({});
 
 
-healthTaskRoute.get("/:id", async (
+healthTaskRoute.get("/:id",
+  authHandler,
+  async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -25,7 +29,9 @@ healthTaskRoute.get("/:id", async (
     }).catch((e) => next(e));
 });
 
+//TODO: CHECK IF USER HAS THAT TEAM AS A VALIDATON SO NO IDIOT CAN FUCK UP THE SYSTEM
 healthTaskRoute.post("/",
+  authHandler,
   validate([
     body("teamId", "InvalidValue").isInt(),
     body("name", "InvalidValue").isString(),
@@ -59,6 +65,7 @@ healthTaskRoute.post("/",
   });
 
 healthTaskRoute.delete("/:id",
+  authHandler,
   async (
     req: Request,
     res: Response,
