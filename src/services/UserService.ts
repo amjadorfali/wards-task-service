@@ -23,7 +23,11 @@ export class UserService implements IUserService {
           include: { teams: true },
           data: {
             email: email,
-            teams: { create: [{ name: email.split("@")[0] }] },
+            teams: {
+              create: [{
+                name: email.split("@")[0].split(/^([^@]+?)[^a-zA-Z0-9_\-+~!]+/).join(" ")
+              }]
+            },
             userIdentities: { create: [{ cognitoUid: subId }] }
           }
         });
@@ -44,7 +48,7 @@ export class UserService implements IUserService {
   getByEmail(email: string | undefined): Promise<UserWithIdentities | null> {
     return prisma.user.findFirst({
       where: { email: email },
-      include: { userIdentities: true }
+      include: { userIdentities: true, teams: true }
     });
   }
 
