@@ -13,30 +13,28 @@ export class UserService implements IUserService {
   }
 
 
-  async create(subId: string, email: string | undefined, teamName: string): Promise<User> {
-    const user = await this.getByEmail(email);
-    if (user) {
-      if (user.userIdentities.find(identity => identity.cognitoUid === subId)) {
-        throw new GenericError("UserAlreadyExists");
-      } else {
-        return prisma.user.update({
-          include: { teams: true},
-          where: { email: email },
-          data: { userIdentities: { create: { cognitoUid: subId } } }
+  async updateMe(subId: string, email: string | undefined): Promise<User> {
+    const systemUser = await this.getByEmail(email);
+    if (systemUser) {
+      const cognitoUser = systemUser.userIdentities.find(identity => identity.cognitoUid === subId);
+      if (!cognitoUser) {
+        await prisma.userIdentitiy.create({
+          data: { userId: systemUser.id, cognitoUid: subId }
         });
       }
+      return systemUser;
     } else {
-      if (email){
+      if (email) {
         return prisma.user.create({
-          include: { teams: true},
+          include: { teams: true },
           data: {
             email: email,
-            teams: { create: [{ name: teamName }] },
+            teams: { create: [{ name: email.split("@")[0] }] },
             userIdentities: { create: [{ cognitoUid: subId }] }
           }
         });
-      }else {
-        throw new GenericError('ObjectNotFound')
+      } else {
+        throw new GenericError("ObjectNotFound");
       }
 
     }

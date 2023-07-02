@@ -12,18 +12,15 @@ const authHandler = generateAuthHandler({ includeCognitoEmail: true, });
 export const userRoute = express.Router();
 
 
-userRoute.post("/",
+userRoute.get("/check",
   authHandler,
-  validate([
-  body("teamName", "InvalidValue").isString()
-]), async (
+   async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const { cognitoUser } = req;
-  const { teamName } = req.body;
-  return userService.create(cognitoUser.uuid, cognitoUser.email, teamName)
+  return userService.updateMe(cognitoUser.uuid, cognitoUser.email)
     .then((data) => {
       res.json(getResponse.success(data));
     }).catch((e) => {
