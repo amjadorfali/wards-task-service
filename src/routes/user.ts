@@ -4,11 +4,17 @@ import { body } from "express-validator";
 import { userService } from "../services/factory";
 import { getResponse } from "../utils";
 import { GenericError } from "../errors";
+import { generateAuthHandler } from "../middlewares/authHandler";
 
+
+
+const authHandler = generateAuthHandler({ includeCognitoEmail: true, });
 export const userRoute = express.Router();
 
 
-userRoute.post("/", validate([
+userRoute.post("/",
+  authHandler,
+  validate([
   body("teamName", "InvalidValue").isString()
 ]), async (
   req: Request,

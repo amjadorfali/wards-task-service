@@ -1,13 +1,19 @@
+import { Team } from "@prisma/client";
+
 export * from "./Assertion";
 export * from "./user";
 
 declare global {
   namespace Express {
     interface Request {
-      // user: UserWithIdentities | null;
       cognitoUser: {
         uuid: string;
-        email: string;
+        email?: string;
+      };
+      user: {
+        id: number;
+        uuid: string;
+        team?: Team[];
       };
     }
   }

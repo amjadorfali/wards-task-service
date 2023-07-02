@@ -13,7 +13,7 @@ export class UserService implements IUserService {
   }
 
 
-  async create(subId: string, email: string, teamName: string): Promise<User> {
+  async create(subId: string, email: string | undefined, teamName: string): Promise<User> {
     const user = await this.getByEmail(email);
     if (user) {
       if (user.userIdentities.find(identity => identity.cognitoUid === subId)) {
@@ -26,14 +26,19 @@ export class UserService implements IUserService {
         });
       }
     } else {
-      return prisma.user.create({
-        include: { teams: true},
-        data: {
-          email: email,
-          teams: { create: [{ name: teamName }] },
-          userIdentities: { create: [{ cognitoUid: subId }] }
-        }
-      });
+      if (email){
+        return prisma.user.create({
+          include: { teams: true},
+          data: {
+            email: email,
+            teams: { create: [{ name: teamName }] },
+            userIdentities: { create: [{ cognitoUid: subId }] }
+          }
+        });
+      }else {
+        throw new GenericError('ObjectNotFound')
+      }
+
     }
   }
 
@@ -44,7 +49,7 @@ export class UserService implements IUserService {
     });
   }
 
-  getByEmail(email: string): Promise<UserWithIdentities | null> {
+  getByEmail(email: string | undefined): Promise<UserWithIdentities | null> {
     return prisma.user.findFirst({
       where: { email: email },
       include: { userIdentities: true }

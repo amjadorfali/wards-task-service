@@ -8,15 +8,12 @@ datasource db {
 }
 
 model User {
-  id               Int             @id @default(autoincrement())
-  uuid             String          @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  teams            Team[]
-  phoneNumber      String?
-  email            String          @unique
-  Incident         Incident[]
-  healthCheckUsage Int             @default(0)
-  // subscriptions   Subscription[]
-  userIdentities   UserIdentitiy[]
+  id             Int             @id @default(autoincrement())
+  teams          Team[]
+  phoneNumber    String?
+  email          String          @unique
+  Incident       Incident[]
+  userIdentities UserIdentitiy[]
 
   @@map("user")
 }
@@ -50,11 +47,13 @@ model UserIdentitiy {
 }
 
 model Team {
-  id          Int           @id @default(autoincrement())
-  name        String
-  users       User[]
-  healthCheck HealthCheck[]
-  incident    Incident[]
+  id               Int           @id @default(autoincrement())
+  uuid             String        @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String
+  users            User[]
+  healthCheck      HealthCheck[]
+  incident         Incident[]
+  healthCheckUsage Int           @default(0)
 
   @@map("team")
 }

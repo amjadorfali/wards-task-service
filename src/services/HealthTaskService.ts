@@ -2,8 +2,15 @@ import { IHealthTaskService } from "./interfaces/IHealthTaskService";
 import { prisma } from "../db";
 import { HealthCheck, HealthTaskMetadata, Prisma } from "@prisma/client";
 import _ from "lodash";
+import { TeamService } from "./TeamService";
 
 export class HealthTaskService implements IHealthTaskService {
+  private teamService: TeamService;
+
+  constructor(teamService: TeamService) {
+    this.teamService = teamService;
+  }
+
   getAllWithTeamId(teamId: number): Promise<HealthCheck[]> {
     return prisma.healthCheck.findMany({ where: { teamId: teamId } });
   }
@@ -13,8 +20,10 @@ export class HealthTaskService implements IHealthTaskService {
   }
 
   async create(healthCheck: HealthCheck, metaData: HealthTaskMetadata, teamId: number) {
+    const team = await this.teamService.getById(teamId);
+    //TODO: check subscription on this level about pricing if it is higher than subscription throw an error
     if (healthCheck.timeout != null) {
-      healthCheck.timeout *= 1000
+      healthCheck.timeout *= 1000;
     }
     let healthCheckCreateInput: Prisma.HealthCheckCreateInput = {
       team: { connect: { id: teamId } },
@@ -46,7 +55,8 @@ export class HealthTaskService implements IHealthTaskService {
         }
       };
     }
-    return prisma.healthCheck.create({ data: healthCheckCreateInput });
+
+    return prisma.$transaction([prisma.healthCheck.create({ data: healthCheckCreateInput }), this.teamService.update(teamId, { healthCheckUsage: team.healthCheckUsage + 1 })]);
   }
 
   update(healthCheck: HealthCheck) {

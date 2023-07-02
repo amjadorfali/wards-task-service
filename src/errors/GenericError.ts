@@ -8,6 +8,7 @@ export type ErrorCode =
   | "ObjectNotFound"
   | "UserAlreadyExists"
   | "UserDoesntHaveEmailFromCognito"
+  | "TeamNotExists"
 
 export class GenericError extends Error {
   errorCode: ErrorCode;
