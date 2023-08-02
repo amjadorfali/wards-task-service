@@ -86,7 +86,6 @@ model HealthCheck {
   lastChecked DateTime
   url         String
   locations   Location[]
-  port        Int?
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @updatedAt
   team        Team                @relation(fields: [teamId], references: [id])
@@ -133,11 +132,7 @@ enum Location {
   IRELAND
   CALIFORNIA
   DUBAI
-  OHIO
-  STOCKHOLM
-  SINGAPORE
   SYDNEY
-  SAO_PAULO
 }
 
 enum Method {

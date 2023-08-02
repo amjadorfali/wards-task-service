@@ -7,6 +7,6 @@ export interface ITeamService {
 
   create(cognitoSubId: string, teamName: string): Promise<Team>;
 
-  update(teamId: number, data: Pick<Team, "healthCheckUsage">): PrismaPromise<Team>;
+  update(teamId: string, data: Pick<Team, "healthCheckUsage">): PrismaPromise<Team>;
 
 }

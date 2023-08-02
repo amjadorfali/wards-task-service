@@ -19,14 +19,14 @@ export class HealthTaskService implements IHealthTaskService {
     return prisma.healthCheck.findFirst({ include: { metadata: true }, where: { id: id } });
   }
 
-  async create(healthCheck: HealthCheck, metaData: HealthTaskMetadata, teamId: number) {
-    const team = await this.teamService.getById(teamId);
+  async create(healthCheck: HealthCheck, metaData: HealthTaskMetadata, teamId: string) {
+    const team = await this.teamService.getByUUID(teamId);
     //TODO: check subscription on this level about pricing if it is higher than subscription throw an error
     if (healthCheck.timeout != null) {
       healthCheck.timeout *= 1000;
     }
     let healthCheckCreateInput: Prisma.HealthCheckCreateInput = {
-      team: { connect: { id: teamId } },
+      team: { connect: { uuid: teamId } },
       url: healthCheck.url,
       inProgress: false,
       lastChecked: new Date(),

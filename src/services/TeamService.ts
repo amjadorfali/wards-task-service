@@ -12,7 +12,13 @@ export class TeamService implements ITeamService {
     }
     return team;
   }
-
+  async getByUUID(teamId: string): Promise<Team> {
+    const team = await prisma.team.findFirst({ where: { uuid: teamId } });
+    if (team === null) {
+      throw new GenericError("TeamNotExists");
+    }
+    return team;
+  }
   addUser(userId: number, teamId: number): Promise<Team> {
 
     return prisma.team.update({ where: { id: teamId }, data: { users: { connect: [{ id: userId }] } } });
@@ -28,8 +34,8 @@ export class TeamService implements ITeamService {
     return prisma.team.create({ data: { name: teamName, users: { connect: { id: cognitoUser.id } } } });
   }
 
-  update(teamId: number, data: Pick<Team, "healthCheckUsage">): PrismaPromise<Team> {
-    return prisma.team.update({ where: { id: teamId }, data: { ...data } });
+  update(teamId: string, data: Pick<Team, "healthCheckUsage">): PrismaPromise<Team> {
+    return prisma.team.update({ where: { uuid: teamId }, data: { ...data } });
   }
 
 

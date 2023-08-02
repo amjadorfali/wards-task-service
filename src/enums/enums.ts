@@ -7,15 +7,15 @@ export enum AssertionType {
   SSL_CERTIFICATE_EXPIRES_IN,
 }
 
-export enum CompareType {
-  SMALL,
-  BIG,
-  SMALL_EQUAL,
-  BIG_EQUAL,
-  DOES_NOT_CONTAIN,
-  EQUAL,
-  NOT_EQUAL
-}
+export const CompareType = {
+  SMALL: "SMALL",
+  BIG: "BIG",
+  SMALL_EQUAL: "SMALL_EQUAL",
+  BIG_EQUAL: "BIG_EQUAL",
+  DOES_NOT_CONTAIN: "DOES_NOT_CONTAIN",
+  EQUAL: "EQUAL",
+  NOT_EQUAL: "NOT_EQUAL",
+};
 
 export const interval = {
   SECOND_30: 30,
@@ -26,5 +26,5 @@ export const interval = {
   MINUTE_5: 300,
   MINUTE_10: 600,
   MINUTE_15: 900,
-  MINUTE_30: 1200
+  MINUTE_30: 1200,
 };
