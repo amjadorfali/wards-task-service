@@ -38,5 +38,8 @@ export class TeamService implements ITeamService {
     return prisma.team.update({ where: { uuid: teamId }, data: { ...data } });
   }
 
+  updateName(teamId: string, name : string): PrismaPromise<Team> {
+    return prisma.team.update({ where: { uuid: teamId }, data: { name } });
+  }
 
 }
