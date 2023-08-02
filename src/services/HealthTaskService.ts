@@ -1,8 +1,8 @@
-import { IHealthTaskService } from "./interfaces/IHealthTaskService";
-import { prisma } from "../db";
-import { HealthCheck, HealthTaskMetadata, Prisma } from "@prisma/client";
-import _ from "lodash";
-import { TeamService } from "./TeamService";
+import { IHealthTaskService } from './interfaces/IHealthTaskService';
+import { prisma } from '../db';
+import { HealthCheck, HealthTaskMetadata, Prisma, Team } from '@prisma/client';
+import _ from 'lodash';
+import { TeamService } from './TeamService';
 
 export class HealthTaskService implements IHealthTaskService {
   private teamService: TeamService;
@@ -11,15 +11,14 @@ export class HealthTaskService implements IHealthTaskService {
     this.teamService = teamService;
   }
 
-  getAllWithTeamId(teamId: number): Promise<HealthCheck[]> {
-    return prisma.healthCheck.findMany({ where: { teamId: teamId } });
+  getAllWithTeamId(teamId: string) {
+    return prisma.healthCheck.findMany({ where: { team: { uuid: teamId } }, include: { metadata: true } });
   }
 
   async get(id: string) {
     return prisma.healthCheck.findFirst({ include: { metadata: true }, where: { id: id } });
   }
 
-  
   async create(healthCheck: HealthCheck, metaData: HealthTaskMetadata, teamId: string) {
     const team = await this.teamService.getByUUID(teamId);
     //TODO: check subscription on this level about pricing if it is higher than subscription throw an error
@@ -37,7 +36,7 @@ export class HealthTaskService implements IHealthTaskService {
       timeout: healthCheck.timeout,
       method: healthCheck.method,
       type: healthCheck.type,
-      locations: healthCheck.locations
+      locations: healthCheck.locations,
     };
 
     if (!_.isEmpty(metaData)) {
@@ -47,13 +46,13 @@ export class HealthTaskService implements IHealthTaskService {
         assertions: metaData.assertions !== null ? metaData.assertions : undefined,
         headers: metaData.headers !== null ? metaData.headers : undefined,
         verifySSL: metaData.verifySSL,
-        requestBody: metaData.requestBody !== null ? metaData.requestBody : undefined
+        requestBody: metaData.requestBody !== null ? metaData.requestBody : undefined,
       };
       healthCheckCreateInput = {
         ...healthCheckCreateInput,
         metadata: {
-          create: metaDataCreateInput
-        }
+          create: metaDataCreateInput,
+        },
       };
     }
 
@@ -69,14 +68,12 @@ export class HealthTaskService implements IHealthTaskService {
         name: healthCheck.name,
         timeout: healthCheck.timeout,
         method: healthCheck.method,
-        type: healthCheck.type
-      }
+        type: healthCheck.type,
+      },
     });
   }
 
   async delete(id: string) {
     return prisma.healthCheck.delete({ where: { id: id } });
   }
-
-
 }

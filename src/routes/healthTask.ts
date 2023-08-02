@@ -28,7 +28,21 @@ healthTaskRoute.get("/:id",
       res.json(getResponse.success(data));
     }).catch((e) => next(e));
 });
-
+healthTaskRoute.get("/:teamId",
+  authHandler,
+  async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    return healthTaskService.get(req.params.teamId)
+      .then((data) => {
+        if (data === null) {
+          throw new GenericError("ObjectNotFound");
+        }
+        res.json(getResponse.success(data));
+      }).catch((e) => next(e));
+  });
 //TODO: CHECK IF USER HAS THAT TEAM AS A VALIDATON SO NO IDIOT CAN FUCK UP THE SYSTEM
 healthTaskRoute.post("/",
   authHandler,
