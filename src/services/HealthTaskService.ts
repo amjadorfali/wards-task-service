@@ -19,6 +19,7 @@ export class HealthTaskService implements IHealthTaskService {
     return prisma.healthCheck.findFirst({ include: { metadata: true }, where: { id: id } });
   }
 
+  
   async create(healthCheck: HealthCheck, metaData: HealthTaskMetadata, teamId: string) {
     const team = await this.teamService.getByUUID(teamId);
     //TODO: check subscription on this level about pricing if it is higher than subscription throw an error
@@ -56,7 +57,7 @@ export class HealthTaskService implements IHealthTaskService {
       };
     }
 
-    return prisma.$transaction([prisma.healthCheck.create({ data: healthCheckCreateInput }), this.teamService.update(teamId, { healthCheckUsage: team.healthCheckUsage + 1 })]);
+    return prisma.healthCheck.create({ data: healthCheckCreateInput });
   }
 
   update(healthCheck: HealthCheck) {

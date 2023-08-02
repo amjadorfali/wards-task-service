@@ -5,7 +5,7 @@ export interface IHealthTaskService {
 
   get(id: string): Promise<HealthCheck | null>;
 
-  create(healthCheck: HealthCheck, metaData: HealthTaskMetadata, teamId: string): Promise<[HealthCheck, Team]>;
+  create(healthCheck: HealthCheck, metaData: HealthTaskMetadata, teamId: string): Promise<HealthCheck>;
 
   delete(id: string): void;
 }
