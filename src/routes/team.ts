@@ -44,3 +44,23 @@ teamRoute.put("/",
         next(e);
       });
   });
+
+
+teamRoute.put("/:teamId",
+authHandler,
+validate([
+  body("name", "InvalidValue").isString()
+]), async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { name } = req.body;
+  const { teamId} = req.params
+  return teamService.updateName(teamId, name)
+    .then((data) => {
+      res.json(getResponse.success(data));
+    }).catch((e) => {
+      next(e);
+    });
+});

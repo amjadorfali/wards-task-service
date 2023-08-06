@@ -28,14 +28,14 @@ healthTaskRoute.get("/:id",
       res.json(getResponse.success(data));
     }).catch((e) => next(e));
 });
-healthTaskRoute.get("/:teamId",
+healthTaskRoute.get("/team/:teamId",
   authHandler,
   async (
     req: Request,
     res: Response,
     next: NextFunction
   ) => {
-    return healthTaskService.get(req.params.teamId)
+    return healthTaskService.getAllWithTeamId(req.params.teamId)
       .then((data) => {
         if (data === null) {
           throw new GenericError("ObjectNotFound");
