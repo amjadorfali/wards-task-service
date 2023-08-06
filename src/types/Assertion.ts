@@ -5,5 +5,5 @@ export interface Assertion {
   value: string | [] | number,
 
   type: AssertionType,
-  compareType: CompareType
+  compareType: typeof CompareType
 }

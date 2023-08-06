@@ -5,13 +5,13 @@ import { GenericError } from '../../errors';
 export const validateAssertions = async (assertions: Assertion[]) => {
   assertions.forEach((val) => {
     switch (val.type) {
-      case AssertionType.RESPONSE_BODY:
+      case AssertionType.RESPONSE_VALUE:
         if (typeof val.value !== 'string') {
           throw new GenericError('FormError', { val: val.value });
         }
         break;
       case AssertionType.RESPONSE_CODE:
-        if (typeof val.value !== 'number' && Object.values(CompareType).includes(val.compareType)) {
+        if (typeof val.value !== 'number' && (Object.values(CompareType) as any[]).includes(val.compareType)) {
           throw new GenericError('FormError', { val: val.value });
         }
         break;
