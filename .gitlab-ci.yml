@@ -8,31 +8,13 @@ variables:
   AWS_TAG_LATEST: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_IMAGE_NAME:latest
   DOCKER_HOST: tcp://docker:2375
 
-#google-cloud:
-#  stage: build
-#  before_script:
-#    - apk add --update make ca-certificates openssl python3
-#    - update-ca-certificates
-#    - echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
-#    - wget https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz
-#    - tar zxvf google-cloud-sdk.tar.gz && ./google-cloud-sdk/install.sh --usage-reporting=false --path-update=true
-#    - google-cloud-sdk/bin/gcloud --quiet components update
-#    - google-cloud-sdk/bin/gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
-#    - docker login -u _json_key --password-stdin https://europe-west3-docker.pkg.dev < ${HOME}/gcloud-service-key.json
-#    - docker pull "europe-west3-docker.pkg.dev/$GCLOUD_PROJECT_ID/$IMAGE_NAME:latest" || true
-#  script:
-#    - docker build -t $IMAGE_NAME .
-#    - docker tag $IMAGE_NAME "europe-west3-docker.pkg.dev/$GCLOUD_PROJECT_ID/$IMAGE_NAME"
-#    - docker push "europe-west3-docker.pkg.dev/$GCLOUD_PROJECT_ID/$IMAGE_NAME:latest"
-#  only:
-#    - master
-
 aws:
   image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
   services:
     - docker:dind
   stage: build
   script:
+    - echo "$AWS_REGION - $AWS_TAG_LATEST - $AWS_IMAGE_NAME"
     - aws ecr get-login-password --region $AWS_REGION |
       docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
     - docker pull $AWS_TAG_LATEST || true
