@@ -39,4 +39,4 @@ app.use(helmet());
 app.use(errorHandler);
 
 
-app.listen(8700, () => console.log("app started with port 8700"));
+app.listen(3020, () => console.log("app started with port 3020"));
