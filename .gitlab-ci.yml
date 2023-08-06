@@ -14,7 +14,7 @@ aws:
     - docker:dind
   stage: build
   script:
-    - echo "$AWS_REGION - $AWS_TAG_LATEST - $AWS_IMAGE_NAME"
+    - echo "$AWS_REGION - $AWS_TAG_LATEST - $AWS_IMAGE_NAME - $AWS_ACCESS_KEY_ID - $AWS_SECRET_ACCESS_KEY"
     - aws ecr get-login-password --region $AWS_REGION |
       docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
     - docker pull $AWS_TAG_LATEST || true
