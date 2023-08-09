@@ -10,7 +10,7 @@ import cors from "cors";
 
 let environment = process.env.ACTIVE_PROFILE;
 
-if (!environment || environment === 'development') {
+if (!environment) {
   require('dotenv').config();
   environment = process.env.ACTIVE_PROFILE;
 }
