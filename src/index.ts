@@ -8,7 +8,13 @@ import { userRoute } from "./routes/user";
 import { teamRoute } from "./routes/team";
 import cors from "cors";
 
-require("dotenv").config();
+let environment = process.env.ACTIVE_PROFILE;
+
+if (!environment || environment === 'development') {
+  require('dotenv').config();
+  environment = process.env.ACTIVE_PROFILE;
+}
+
 const app = express();
 //TODO: Remove from Production
 app.use(cors());
