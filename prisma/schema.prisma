@@ -75,27 +75,38 @@ model Incident {
 }
 
 model HealthCheck {
-  id          String              @id @default(uuid())
-  name        String
-  method      Method
-  timeout     Int?
-  enabled     Boolean             @default(true)
-  type        HealthCheckType
-  inProgress  Boolean
-  interval    Int
-  lastChecked DateTime
-  url         String
-  locations   Location[]
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-  team        Team                @relation(fields: [teamId], references: [id])
-  teamId      Int
-  incidents   Incident[]
-  metadata    HealthTaskMetadata? @relation(fields: [assertionId], references: [id])
-  assertionId Int?                @unique
+  id         String              @id @default(uuid())
+  name       String
+  method     Method
+  timeout    Int?
+  enabled    Boolean             @default(true)
+  type       HealthCheckType
+  interval   Int
+  url        String
+  locations  Location[]
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  team       Team                @relation(fields: [teamId], references: [id])
+  teamId     Int
+  incidents  Incident[]
+  metadata   HealthTaskMetadata? @relation(fields: [metadataId], references: [id])
+  metadataId Int?                @unique
+  insights   TaskInsight?       @relation(fields: [insightsId], references: [id])
+  insightsId String              @unique
 
   @@unique([teamId, name])
   @@map("health_check")
+}
+
+model TaskInsight {
+  id           String    @id @default(uuid())
+  sslIssuedBy  String?
+  sslExpiresOn DateTime?
+  status       Int?
+  updatedAt    DateTime  @updatedAt
+
+  HealthCheck HealthCheck?
+  @@map("task_insight")
 }
 
 model HealthTaskMetadata {

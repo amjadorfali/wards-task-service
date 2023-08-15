@@ -12,7 +12,10 @@ export class HealthTaskService implements IHealthTaskService {
   }
 
   getAllWithTeamId(teamId: string) {
-    return prisma.healthCheck.findMany({ where: { team: { uuid: teamId } }, include: { metadata: true } });
+    return prisma.healthCheck.findMany({
+      where: { team: { uuid: teamId } },
+      include: { metadata: true, insights: true },
+    });
   }
 
   async get(id: string) {
@@ -28,8 +31,6 @@ export class HealthTaskService implements IHealthTaskService {
     let healthCheckCreateInput: Prisma.HealthCheckCreateInput = {
       team: { connect: { uuid: teamId } },
       url: healthCheck.url,
-      inProgress: false,
-      lastChecked: new Date(),
       interval: healthCheck.interval,
       enabled: true,
       name: healthCheck.name,
