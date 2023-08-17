@@ -118,6 +118,6 @@ export class HealthTaskService implements IHealthTaskService {
 
   async toggle(id: string) {
     const task = await this.getById(id);
-    prisma.healthCheck.update({ where: { id }, data: { enabled: !task.enabled } });
+   return prisma.healthCheck.update({ where: { id }, data: { enabled: !task.enabled } });
   }
 }
