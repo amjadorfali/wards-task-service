@@ -82,7 +82,7 @@ healthTaskRoute.delete('/:id', authHandler, async (req: Request, res: Response, 
 
 healthTaskRoute.put('/:id/toggle', authHandler, async (req: Request, res: Response, next: NextFunction) => {
   return healthTaskService
-    .delete(req.params.id)
+    .toggle(req.params.id)
     .then((data) => {
       res.json(getResponse.success(data));
     })
