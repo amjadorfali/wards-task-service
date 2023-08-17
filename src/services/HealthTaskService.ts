@@ -1,8 +1,9 @@
 import { IHealthTaskService } from './interfaces/IHealthTaskService';
 import { prisma } from '../db';
-import { HealthCheck, HealthTaskMetadata, Prisma, Team } from '@prisma/client';
+import { HealthCheck, HealthTaskMetadata, Prisma } from '@prisma/client';
 import _ from 'lodash';
 import { TeamService } from './TeamService';
+import { GenericError } from '../errors';
 
 export class HealthTaskService implements IHealthTaskService {
   private teamService: TeamService;
@@ -16,6 +17,14 @@ export class HealthTaskService implements IHealthTaskService {
       where: { team: { uuid: teamId } },
       include: { metadata: true, insights: true },
     });
+  }
+
+  async getById(id: string) {
+    const task = await prisma.healthCheck.findFirst({ where: { id } });
+    if (!task) {
+      throw new GenericError('TaskDoesNotExists');
+    }
+    return task;
   }
 
   async get(id: string) {
@@ -54,15 +63,40 @@ export class HealthTaskService implements IHealthTaskService {
         metadata: {
           create: metaDataCreateInput,
         },
+        insights: {
+          create: {},
+        },
       };
     }
 
     return prisma.healthCheck.create({ data: healthCheckCreateInput });
   }
 
-  update(healthCheck: HealthCheck) {
+  update(healthCheck: HealthCheck, metaData: HealthTaskMetadata, id: string) {
+    const metadataUpdateInput: Prisma.HealthTaskMetadataUpdateInput = {};
+    if (!_.isEmpty(metaData)) {
+      if (metaData.assertions) {
+        metadataUpdateInput.assertions = metaData.assertions;
+      }
+      if (metaData.verifySSL) {
+        metadataUpdateInput.verifySSL = metaData.verifySSL;
+      }
+      if (metaData.headers) {
+        metadataUpdateInput.headers = metaData.headers;
+      }
+      if (metaData.httpUserName) {
+        metadataUpdateInput.httpUserName = metaData.httpUserName;
+      }
+      if (metaData.httpPassword) {
+        metadataUpdateInput.httpPassword = metaData.httpPassword;
+      }
+      if (metaData.requestBody) {
+        metadataUpdateInput.requestBody = metaData.requestBody;
+      }
+    }
+
     return prisma.healthCheck.update({
-      where: { id: healthCheck.id },
+      where: { id },
       data: {
         interval: healthCheck.interval,
         enabled: healthCheck.enabled,
@@ -70,11 +104,19 @@ export class HealthTaskService implements IHealthTaskService {
         timeout: healthCheck.timeout,
         method: healthCheck.method,
         type: healthCheck.type,
+        metadata: {
+          update: metadataUpdateInput,
+        },
       },
     });
   }
 
   async delete(id: string) {
-    return prisma.healthCheck.delete({ where: { id: id } });
+    return prisma.healthCheck.delete({ where: { id } });
+  }
+
+  async toggle(id: string) {
+    const task = await this.getById(id);
+    prisma.healthCheck.update({ where: { id }, data: { enabled: !task.enabled } });
   }
 }

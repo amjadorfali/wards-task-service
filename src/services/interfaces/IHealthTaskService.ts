@@ -1,4 +1,4 @@
-import { HealthCheck, HealthTaskMetadata, Team } from "@prisma/client";
+import { HealthCheck, HealthTaskMetadata, Team } from '@prisma/client';
 
 export interface IHealthTaskService {
   getAllWithTeamId(id: string): Promise<HealthCheck[]>;
@@ -8,4 +8,7 @@ export interface IHealthTaskService {
   create(healthCheck: HealthCheck, metaData: HealthTaskMetadata, teamId: string): Promise<HealthCheck>;
 
   delete(id: string): void;
+
+  toggle(id: string): void;
+  update(healthCheck: HealthCheck, metaData: HealthTaskMetadata, id:string): void
 }
