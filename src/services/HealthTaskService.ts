@@ -73,22 +73,22 @@ export class HealthTaskService implements IHealthTaskService {
   update(healthCheck: HealthCheck, metaData: HealthTaskMetadata, id: string) {
     const metadataUpdateInput: Prisma.HealthTaskMetadataUpdateInput = {};
     if (!_.isEmpty(metaData)) {
-      if (metaData.assertions) {
+      if (Array.isArray(metaData.assertions)) {
         metadataUpdateInput.assertions = metaData.assertions;
       }
-      if (metaData.verifySSL) {
+      if (typeof(metaData.verifySSL)==='boolean') {
         metadataUpdateInput.verifySSL = metaData.verifySSL;
       }
-      if (metaData.headers) {
+      if (Array.isArray(metaData.headers)) {
         metadataUpdateInput.headers = metaData.headers;
       }
-      if (metaData.httpUserName) {
+      if (typeof metaData.httpUserName==='string') {
         metadataUpdateInput.httpUserName = metaData.httpUserName;
       }
-      if (metaData.httpPassword) {
+      if (typeof metaData.httpPassword ==='string') {
         metadataUpdateInput.httpPassword = metaData.httpPassword;
       }
-      if (metaData.requestBody) {
+      if (typeof metaData.requestBody==='string') {
         metadataUpdateInput.requestBody = metaData.requestBody;
       }
     }
@@ -102,6 +102,9 @@ export class HealthTaskService implements IHealthTaskService {
         timeout: healthCheck.timeout,
         method: healthCheck.method,
         type: healthCheck.type,
+        locations  : healthCheck.locations,
+        url: healthCheck.url,
+        updatedAt: new Date(),
         metadata: {
           update: metadataUpdateInput,
         },
