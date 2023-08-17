@@ -28,7 +28,7 @@ export class HealthTaskService implements IHealthTaskService {
   }
 
   async get(id: string) {
-    return prisma.healthCheck.findFirst({ include: { metadata: true }, where: { id: id } });
+    return prisma.healthCheck.findFirst({ include: { metadata: true, insights:true }, where: { id: id } });
   }
 
   async create(healthCheck: HealthCheck, metaData: HealthTaskMetadata, teamId: string) {
