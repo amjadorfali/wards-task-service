@@ -101,7 +101,7 @@ model HealthCheck {
 model TaskInsight {
   id           String    @id @default(uuid())
   sslIssuedBy  String?
-  sslExpiresOn DateTime?
+  sslExpiresOn String?
   status       Int?
   updatedAt    DateTime  @updatedAt
 
