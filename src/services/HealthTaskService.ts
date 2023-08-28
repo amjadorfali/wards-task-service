@@ -28,11 +28,22 @@ export class HealthTaskService implements IHealthTaskService {
   }
 
   async get(id: string) {
-    return prisma.healthCheck.findFirst({ include: { metadata: true, insights:true }, where: { id: id } });
+    return prisma.healthCheck.findFirst({ include: { metadata: true, insights: true }, where: { id: id } });
   }
 
-  async create(healthCheck: HealthCheck, metaData: HealthTaskMetadata, teamId: string) {
+  async create(
+    healthCheck: HealthCheck,
+    metaData: HealthTaskMetadata,
+    teamId: string,
+    cognitoUser: {
+      uuid: string;
+      email?: string;
+    },
+  ) {
     const team = await this.teamService.getByUUID(teamId);
+    if (team.healthCheckUsage > 3) {
+      throw new GenericError('HealthCheckLimitExceeded');
+    }
     //TODO: check subscription on this level about pricing if it is higher than subscription throw an error
 
     let healthCheckCreateInput: Prisma.HealthCheckCreateInput = {
@@ -55,6 +66,7 @@ export class HealthTaskService implements IHealthTaskService {
         headers: metaData.headers !== null ? metaData.headers : undefined,
         verifySSL: metaData.verifySSL,
         requestBody: metaData.requestBody !== null ? metaData.requestBody : undefined,
+        issuedUserEmail: metaData.issuedUserEmail ? metaData.issuedUserEmail : cognitoUser.email,
       };
       healthCheckCreateInput = {
         ...healthCheckCreateInput,
@@ -66,7 +78,7 @@ export class HealthTaskService implements IHealthTaskService {
         },
       };
     }
-
+    await prisma.team.update({ where: { id: team.id }, data: { healthCheckUsage: team.healthCheckUsage + 1 } });
     return prisma.healthCheck.create({ data: healthCheckCreateInput });
   }
 
@@ -76,19 +88,19 @@ export class HealthTaskService implements IHealthTaskService {
       if (Array.isArray(metaData.assertions)) {
         metadataUpdateInput.assertions = metaData.assertions;
       }
-      if (typeof(metaData.verifySSL)==='boolean') {
+      if (typeof metaData.verifySSL === 'boolean') {
         metadataUpdateInput.verifySSL = metaData.verifySSL;
       }
       if (Array.isArray(metaData.headers)) {
         metadataUpdateInput.headers = metaData.headers;
       }
-      if (typeof metaData.httpUserName==='string') {
+      if (typeof metaData.httpUserName === 'string') {
         metadataUpdateInput.httpUserName = metaData.httpUserName;
       }
-      if (typeof metaData.httpPassword ==='string') {
+      if (typeof metaData.httpPassword === 'string') {
         metadataUpdateInput.httpPassword = metaData.httpPassword;
       }
-      if (typeof metaData.requestBody==='string') {
+      if (typeof metaData.requestBody === 'string') {
         metadataUpdateInput.requestBody = metaData.requestBody;
       }
     }
@@ -102,7 +114,7 @@ export class HealthTaskService implements IHealthTaskService {
         timeout: healthCheck.timeout,
         method: healthCheck.method,
         type: healthCheck.type,
-        locations  : healthCheck.locations,
+        locations: healthCheck.locations,
         url: healthCheck.url,
         updatedAt: new Date(),
         metadata: {
@@ -118,6 +130,6 @@ export class HealthTaskService implements IHealthTaskService {
 
   async toggle(id: string) {
     const task = await this.getById(id);
-   return prisma.healthCheck.update({ where: { id }, data: { enabled: !task.enabled } });
+    return prisma.healthCheck.update({ where: { id }, data: { enabled: !task.enabled } });
   }
 }

@@ -8,13 +8,13 @@ datasource db {
 }
 
 model User {
-  id             Int             @id @default(autoincrement())
-  uuid           String          @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  teams          Team[]
-  phoneNumber    String?
-  email          String          @unique
-  Incident       Incident[]
-  userIdentities UserIdentitiy[]
+  id                 Int                  @id @default(autoincrement())
+  uuid               String               @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  teams              Team[]
+  phoneNumber        String?
+  email              String               @unique
+  Incident           Incident[]
+  userIdentities     UserIdentitiy[]
 
   @@map("user")
 }
@@ -91,7 +91,7 @@ model HealthCheck {
   incidents  Incident[]
   metadata   HealthTaskMetadata? @relation(fields: [metadataId], references: [id])
   metadataId Int?                @unique
-  insights   TaskInsight?       @relation(fields: [insightsId], references: [id])
+  insights   TaskInsight?        @relation(fields: [insightsId], references: [id])
   insightsId String              @unique
 
   @@unique([teamId, name])
@@ -99,26 +99,26 @@ model HealthCheck {
 }
 
 model TaskInsight {
-  id           String    @id @default(uuid())
+  id           String   @id @default(uuid())
   sslIssuedBy  String?
   sslExpiresOn String?
   status       Int?
-  updatedAt    DateTime  @updatedAt
+  updatedAt    DateTime @updatedAt
 
   HealthCheck HealthCheck?
+
   @@map("task_insight")
 }
 
 model HealthTaskMetadata {
-  id           Int          @id @default(autoincrement())
-  httpUserName String?
-  httpPassword String?
-  headers      Json?
-  assertions   Json?
-  requestBody  Json?
-  verifySSL    Boolean      @default(false)
-  healthCheck  HealthCheck?
-
+  id              Int          @id @default(autoincrement())
+  httpUserName    String?
+  httpPassword    String?
+  headers         Json?
+  assertions      Json?
+  requestBody     Json?
+  verifySSL       Boolean      @default(false)
+  healthCheck     HealthCheck?
   @@map("health_task_metadata")
 }
 

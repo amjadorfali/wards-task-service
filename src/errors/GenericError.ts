@@ -9,7 +9,8 @@ export type ErrorCode =
   | 'UserAlreadyExists'
   | 'UserDoesntHaveEmailFromCognito'
   | 'TeamNotExists'
-  | 'TaskDoesNotExists';
+  | 'TaskDoesNotExists'
+  | 'HealthCheckLimitExceeded';
 
 export class GenericError extends Error {
   errorCode: ErrorCode;

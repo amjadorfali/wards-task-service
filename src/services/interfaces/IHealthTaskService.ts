@@ -5,10 +5,19 @@ export interface IHealthTaskService {
 
   get(id: string): Promise<HealthCheck | null>;
 
-  create(healthCheck: HealthCheck, metaData: HealthTaskMetadata, teamId: string): Promise<HealthCheck>;
+  create(
+    healthCheck: HealthCheck,
+    metaData: HealthTaskMetadata,
+    teamId: string,
+    cognitoUser: {
+      uuid: string;
+      email?: string;
+    },
+  ): Promise<HealthCheck>;
 
   delete(id: string): void;
 
   toggle(id: string): void;
-  update(healthCheck: HealthCheck, metaData: HealthTaskMetadata, id:string): void
+
+  update(healthCheck: HealthCheck, metaData: HealthTaskMetadata, id: string): void;
 }

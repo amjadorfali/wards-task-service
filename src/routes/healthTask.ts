@@ -10,7 +10,7 @@ import { interval } from '../enums/enums';
 import { generateAuthHandler } from '../middlewares/authHandler';
 
 export const healthTaskRoute = express.Router();
-const authHandler = generateAuthHandler({});
+const authHandler = generateAuthHandler({includeCognitoEmail:true});
 
 healthTaskRoute.get('/:id', authHandler, async (req: Request, res: Response, next: NextFunction) => {
   return healthTaskService
@@ -53,11 +53,14 @@ healthTaskRoute.post(
     body('metadata.requestBody', 'InvalidValue').optional(),
     body('metadata.httpUserName', 'InvalidValue').optional().isString(),
     body('metadata.httpPassword', 'InvalidValue').optional().isString(),
+    body('metadata.issuedUserEmail', 'InvalidValue').optional().isString(),
   ]),
   async (req: Request, res: Response, next: NextFunction) => {
     const { metadata, teamId, ...healthCheckParams } = req.body;
+    const { cognitoUser } = req;
+
     return healthTaskService
-      .create(healthCheckParams, metadata, teamId)
+      .create(healthCheckParams, metadata, teamId, cognitoUser)
       .then((data) => {
         res.json(getResponse.success(data));
       })
