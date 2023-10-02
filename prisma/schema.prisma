@@ -104,7 +104,6 @@ model TaskInsight {
   sslExpiresOn String?
   status       Int?
   updatedAt    DateTime @updatedAt
-
   HealthCheck HealthCheck?
 
   @@map("task_insight")
@@ -119,6 +118,8 @@ model HealthTaskMetadata {
   requestBody     Json?
   verifySSL       Boolean      @default(false)
   healthCheck     HealthCheck?
+  issuedUserEmail String?
+
   @@map("health_task_metadata")
 }
 
