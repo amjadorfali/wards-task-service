@@ -14,6 +14,8 @@ import bodyParser from "body-parser";
 import { errorHandler } from "./middlewares/errorHandler";
 import { userRoute } from "./routes/user";
 import { teamRoute } from "./routes/team";
+import { taskInsightsRoute } from "./routes/taskInsights";
+
 import cors from "cors";
 
 
@@ -44,6 +46,7 @@ app.get("/api/health-check", (req, res) => {
 app.use("/api/task/health", standardLimiter, healthTaskRoute);
 app.use("/api/team/", standardLimiter, teamRoute);
 app.use("/api/me/", standardLimiter, userRoute);
+app.use("/api/insights", standardLimiter, taskInsightsRoute)
 app.use(helmet());
 app.use(errorHandler);
 

@@ -10,7 +10,7 @@ import { interval } from '../enums/enums';
 import { generateAuthHandler } from '../middlewares/authHandler';
 
 export const healthTaskRoute = express.Router();
-const authHandler = generateAuthHandler({includeCognitoEmail:true});
+const authHandler = generateAuthHandler({ includeCognitoEmail: true });
 
 healthTaskRoute.get('/:id', authHandler, async (req: Request, res: Response, next: NextFunction) => {
   return healthTaskService
@@ -34,6 +34,16 @@ healthTaskRoute.get('/team/:teamId', authHandler, async (req: Request, res: Resp
     })
     .catch((e) => next(e));
 });
+
+healthTaskRoute.get('/interval/:interval', async (req: Request<any, any, { interval: number }>, res: Response, next: NextFunction) => {
+  return healthTaskService
+    .getByInterval(parseInt(req.params.interval))
+    .then((data) => {
+      res.json(getResponse.success(data));
+    })
+    .catch((e) => next(e));
+});
+
 //TODO: CHECK IF USER HAS THAT TEAM AS A VALIDATION SO NO IDIOT CAN FUCK UP THE SYSTEM
 healthTaskRoute.post(
   '/',
@@ -65,7 +75,7 @@ healthTaskRoute.post(
         res.json(getResponse.success(data));
       })
       .catch((e) => {
-        console.log(e)
+        console.log(e);
         next(e);
       });
   },
@@ -83,7 +93,6 @@ healthTaskRoute.delete('/:id', authHandler, async (req: Request, res: Response, 
     });
 });
 
-
 healthTaskRoute.put('/:id/toggle', authHandler, async (req: Request, res: Response, next: NextFunction) => {
   return healthTaskService
     .toggle(req.params.id)
@@ -95,7 +104,6 @@ healthTaskRoute.put('/:id/toggle', authHandler, async (req: Request, res: Respon
       next(e);
     });
 });
-
 
 healthTaskRoute.put(
   '/:id',

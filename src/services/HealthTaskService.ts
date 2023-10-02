@@ -19,6 +19,10 @@ export class HealthTaskService implements IHealthTaskService {
     });
   }
 
+  getByInterval(interval: number) {
+    return prisma.healthCheck.findMany({ where: { interval, enabled: true }, include: { metadata: true } });
+  }
+
   async getById(id: string) {
     const task = await prisma.healthCheck.findFirst({ where: { id } });
     if (!task) {
