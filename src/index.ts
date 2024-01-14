@@ -47,6 +47,8 @@ app.use("/api/task/health", standardLimiter, healthTaskRoute);
 app.use("/api/team/", standardLimiter, teamRoute);
 app.use("/api/me/", standardLimiter, userRoute);
 app.use("/api/insights", standardLimiter, taskInsightsRoute)
+app.use("/webhook", standardLimiter, taskInsightsRoute)
+
 app.use(helmet());
 app.use(errorHandler);
 

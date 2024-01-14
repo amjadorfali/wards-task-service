@@ -55,6 +55,7 @@ model Team {
   healthCheck      HealthCheck[]
   incident         Incident[]
   healthCheckUsage Int           @default(0)
+  subscription     Subscription  @default(FREE)
 
   @@map("team")
 }
@@ -123,21 +124,7 @@ model HealthTaskMetadata {
   @@map("health_task_metadata")
 }
 
-// enum CompareType {
-//   SMALL
-//   BIG
-//   SMALL_EQUAL
-//   BIG_EQUAL
-//   DOES_NOT_CONTAIN
-//   EQUAL
-//   NOT_EQUAL
-// }
 
-// model Header {
-//   id            Int          @id @default(autoincrement())
-//   type          String
-//   value         String
-// }
 
 enum Location {
   FRANKFURT
@@ -180,7 +167,12 @@ enum Roles {
   COMMENTER
   READER
 }
-
+enum Subscription {
+  FREE
+  FIRST_TIER
+  SECOND_TIER
+  THIRD_TIER
+}
 enum IncidentStatus {
   ONGOING
   RESOLVED
