@@ -1,4 +1,3 @@
-import {validate} from "../utils/validations";
 import express, {NextFunction, Request, response, Response} from "express";
 import {getResponse} from "../utils";
 import { subscriptionService } from "../services/factory";
@@ -6,8 +5,7 @@ const crypto = require('crypto');
 
 export const subscriptionRoute = express.Router();
 
-subscriptionRoute.post("/overview",
-  validate([]),
+subscriptionRoute.post("/process",
   async (
     req: Request,
     res: Response,
@@ -46,3 +44,6 @@ subscriptionRoute.post("/overview",
     //   });
   })
 
+subscriptionRoute.get('*', function(req, res){
+  res.send('what???');
+});
