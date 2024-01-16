@@ -5,7 +5,6 @@ if (!environment) {
   require('dotenv').config();
   environment = process.env.ACTIVE_PROFILE;
 }
-import { requestLogger } from "./middlewares/requestLogger";
 
 import express from "express";
 import helmet from "helmet";
@@ -28,7 +27,6 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
-app.use(requestLogger)
 
 app.get("/api/health-check", (req, res) => {
   return res.json({
